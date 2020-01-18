@@ -1,11 +1,13 @@
 import sys
-
+import os
 import pygame
 import pygame.sprite
 
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
+
 class AlianInvasion:
     """ Top Level class to maintain the game."""
     
@@ -71,6 +73,9 @@ class AlianInvasion:
         if len(self.bullets) < self.settings.max_bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+            
+    def get_image_path(self, image_name):
+        return os.path.join(os.path.join(os.path.dirname(__file__), "images"), image_name)
             
 if __name__ == '__main__':
     ai = AlianInvasion()
