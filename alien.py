@@ -1,5 +1,5 @@
 import pygame
-import pygame.sprite import Sprite
+from pygame.sprite import Sprite
 
 class Alien(Sprite):
     """ All the alien stuff resides here """
