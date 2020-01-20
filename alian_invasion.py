@@ -99,6 +99,7 @@ class AlianInvasion:
         if self.stats.ships_left > 0:
             # Redude the number of ships
             self.stats.ships_left -= 1
+            self.scoreboard.prep_ships()
 
             # clear the aliens and bullets
             self.aliens.empty()
@@ -168,6 +169,7 @@ class AlianInvasion:
             self.stats.reset_stats()
             self.scoreboard.prep_score()
             self.scoreboard.prep_level()
+            self.scoreboard.prep_ships()
             self.settings.initialize_dynamic_settings()
             # remove any remaining aliens
             self.aliens.empty()

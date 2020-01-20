@@ -1,11 +1,12 @@
 import pygame
 import os
+from pygame.sprite import Sprite
 
-
-class Ship:
+class Ship(Sprite):
     """ All the ship related actions and attributes"""
 
     def __init__(self, ai_game):
+        super().__init__()
         self.screen = ai_game.screen
         self.screen_rect = ai_game.screen.get_rect()
         self.image = pygame.image.load(self.get_image_path("ship.bmp"))
