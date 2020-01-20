@@ -11,9 +11,9 @@ class Settings:
         self.bullet_width = 10
         self.bullet_height = 25
         self.bullet_color = (255, 0, 0)
-        self.max_bullets_allowed = 50
-        self.fleet_drop_speed = 20
-        self.ship_limit = 1
+        self.max_bullets_allowed = 10
+        self.fleet_drop_speed = 10
+        self.ship_limit = 3
 
         self.speedup_scale = 1.2
         self.initialize_dynamic_settings()
@@ -22,7 +22,7 @@ class Settings:
         """ Initialize the setting that can change. """
         self.ship_speed = 10
         self.bullet_speed = 10.0
-        self.alien_speed = 10.0
+        self.alien_speed = 5.0
         self.alien_points = 50
 
         # fleet direction : right = 1 and left = -1
