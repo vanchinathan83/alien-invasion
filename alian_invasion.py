@@ -9,6 +9,8 @@ from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
+from button import Button
+from scoreboard import Scoreboard
 
 class AlianInvasion:
     """ Top Level class to maintain the game."""
@@ -24,7 +26,10 @@ class AlianInvasion:
         self.ship = Ship(self)
         self.aliens = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
+        self.scoreboard = Scoreboard(self)
         self._create_fleet()
+        # Make the button
+        self.play_button = Button(self, "Play")
 
     def run_game(self):
         while True:
@@ -105,6 +110,7 @@ class AlianInvasion:
 
             sleep(1)
         else:
+            pygame.mouse.set_visible(True)
             self.stats.game_active = False
 
     def _update_bullets(self):
@@ -113,14 +119,23 @@ class AlianInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
-        self._check_bullet_alien_collions()
+        self._check_bullet_alien_collisions()
 
-    def _check_bullet_alien_collions(self):
+    def _check_bullet_alien_collisions(self):
         """ check collisions and recreate fleet if done. """
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+        if collisions:
+            for collision in collisions.values():
+                self.stats.score += self.settings.alien_points
+            self.scoreboard.prep_score()
+            self.scoreboard.check_high_score()
+
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
+            self.stats.level += 1
+            self.scoreboard.prep_level()
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
@@ -129,8 +144,11 @@ class AlianInvasion:
             bullet.draw_bullet()
         # using the sprite draw function
         self.aliens.draw(self.screen)
+        if not self.stats.game_active:
+            self.play_button.draw_button()
+        self.scoreboard.show_score()
         pygame.display.flip()
-           
+      
     def _check_events(self):
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -139,7 +157,28 @@ class AlianInvasion:
                     self._check_keydown_event(event)
                 elif event.type == pygame.KEYUP:
                     self._check_keyup_event(event)
-                        
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    self._check_play_button(mouse_pos)
+
+    def _check_play_button(self, mouse_pos):
+        """Check whether the mouse button was clicked. """
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            self.stats.reset_stats()
+            self.scoreboard.prep_score()
+            self.scoreboard.prep_level()
+            self.settings.initialize_dynamic_settings()
+            # remove any remaining aliens
+            self.aliens.empty()
+            self.bullets.empty()
+
+            # Create a new fleet
+            self._create_fleet()
+            self.ship.center_ship()
+            self.stats.game_active = True
+            pygame.mouse.set_visible(False)
+
     def _check_keydown_event(self, event):
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = True
@@ -149,7 +188,7 @@ class AlianInvasion:
             self._fire_bullet()
         elif event.key == pygame.K_q:
             sys.exit()
-            
+
     def _check_keyup_event(self, event):
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = False
